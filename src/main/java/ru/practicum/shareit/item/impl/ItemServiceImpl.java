@@ -47,15 +47,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByOwner(Long id) {
-        return itemStorage.getItemsByOwner(id).stream().
-                map(ItemMapper::toItemDto).
-                collect(Collectors.toList());
+        return itemStorage.getItemsByOwner(id)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> search(String text) {
-        return itemStorage.search(text).stream().
-                map(ItemMapper::toItemDto).
-                collect(Collectors.toList());
+        return itemStorage.search(text)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

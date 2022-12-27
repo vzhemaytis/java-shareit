@@ -60,9 +60,9 @@ public class InMemoryUserStorageImpl implements UserStorage {
         return id++;
     }
 
-    private void checkEmailDuplicated (User user) {
-        Optional<User> duplicateEmailUser = users.values().stream().
-                filter(u -> u.getEmail().equals(user.getEmail())).findFirst();
+    private void checkEmailDuplicated(User user) {
+        Optional<User> duplicateEmailUser = users.values().stream()
+                .filter(u -> u.getEmail().equals(user.getEmail())).findFirst();
         if (duplicateEmailUser.isPresent()) {
             throw new DuplicateEmailException(
                     String.format("Email %s is already used by other user", user.getEmail()));
