@@ -52,4 +52,13 @@ public class ItemController {
         return itemService.getItemsByOwner(owner);
     }
 
+    @GetMapping("/search")
+    public List<ItemDto> search(@RequestParam(name = "text") String text) {
+        log.info("search items name or desc contains = {}", text);
+        if (text.isEmpty()) {
+            return List.of();
+        }
+        return itemService.search(text);
+    }
+
 }

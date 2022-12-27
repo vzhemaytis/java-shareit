@@ -56,6 +56,15 @@ public class InMemoryItemStorageImpl implements ItemStorage {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Item> search(String text) {
+        return items.values().stream()
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
     private Long getId() {
         return id++;
     }
