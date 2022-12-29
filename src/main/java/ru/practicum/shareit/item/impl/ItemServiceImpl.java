@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemService;
@@ -13,15 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
-
-    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage) {
-        this.itemStorage = itemStorage;
-        this.userStorage = userStorage;
-    }
 
     @Override
     public ItemDto addNewItem(ItemDto itemDto) {
@@ -55,6 +52,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> search(String text) {
+        if (text.isEmpty()) {
+            return List.of();
+        }
         return itemStorage.search(text)
                 .stream()
                 .map(ItemMapper::toItemDto)

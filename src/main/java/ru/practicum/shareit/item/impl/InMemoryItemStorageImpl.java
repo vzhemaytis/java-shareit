@@ -14,7 +14,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class InMemoryItemStorageImpl implements ItemStorage {
-    private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items;
+
+    public InMemoryItemStorageImpl() {
+        this.items = new HashMap<>();
+    }
+
     private Long id = 1L;
 
     @Override

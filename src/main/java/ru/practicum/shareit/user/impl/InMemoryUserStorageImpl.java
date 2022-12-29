@@ -14,7 +14,11 @@ import java.util.Optional;
 @Component
 public class InMemoryUserStorageImpl implements UserStorage {
     private Long id = 1L;
-    private final Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users;
+
+    public InMemoryUserStorageImpl() {
+        this.users = new HashMap<>();
+    }
 
     @Override
     public List<User> getUsers() {
