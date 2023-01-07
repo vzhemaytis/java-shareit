@@ -5,17 +5,38 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-bookings.
  */
+@Entity
+@Table(name = "bookings")
 @Data
 public class Booking {
-    private final Long id;
-    private final LocalDateTime start;
-    private final LocalDateTime end;
-    private final Item item;
-    private final User booker;
-    private final BookingStatus status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "start_time")
+    private LocalDateTime start;
+    @Column(name = "end_time")
+    private LocalDateTime end;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "item_id")
+    private Item item;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "booker_id")
+    private User booker;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
+
+    public Booking(LocalDateTime start, LocalDateTime end, BookingStatus status) {
+        this.start = start;
+        this.end = end;
+        this.status = status;
+    }
+
+    public Booking() {
+    }
 }

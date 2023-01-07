@@ -16,7 +16,6 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,9 +77,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isEmpty()) {
             return List.of();
         }
-        Set<Item> items = itemRepository.findByNameContainingIgnoreCase(text);
-        items.addAll(itemRepository.findByDescriptionContainingIgnoreCase(text));
-        return items.stream()
+        return itemRepository.search(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

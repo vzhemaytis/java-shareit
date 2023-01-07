@@ -32,12 +32,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto findUser(Long id) {
-        Optional<User> user = repository.findById(id);
-        if (user.isEmpty()) {
-            throw new EntityNotFoundException(
-                    String.format("%s with id= %s not found", User.class.getSimpleName(), id));
-        }
-        return UserMapper.toUserDto(user.get());
+        return UserMapper.toUserDto(getUser(id));
     }
 
     @Transactional
@@ -51,12 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto) {
         Long userId = userDto.getId();
-        Optional<User> userToUpdate = repository.findById(userId);
-        if (userToUpdate.isEmpty()) {
-            throw new EntityNotFoundException(
-                    String.format("%s with id= %s not found", User.class.getSimpleName(), userId));
-        }
-        User existUser = userToUpdate.get();
+        User existUser = getUser(userId);
         User user = UserMapper.toUser(userDto);
         if (user.getName() != null) {
             existUser.setName(user.getName());
@@ -71,5 +61,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         repository.deleteById(id);
+    }
+
+    private User getUser(Long userId) {
+        Optional<User> user = repository.findById(userId);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException(
+                    String.format("%s with id= %s not found", User.class.getSimpleName(), userId));
+        }
+        return user.get();
     }
 }
