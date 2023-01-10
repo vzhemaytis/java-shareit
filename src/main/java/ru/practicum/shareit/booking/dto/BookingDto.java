@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.validator.StartAndEndValid;
 import ru.practicum.shareit.item.dto.ItemInfoDto;
 import ru.practicum.shareit.user.dto.UserInfoDto;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
+@StartAndEndValid
 public class BookingDto {
     private Long id;
     @NotNull(message = "start date should be not null")

@@ -16,5 +16,5 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    User checkUser(Long id);
+    User checkIfUserExist(Long id);
 }

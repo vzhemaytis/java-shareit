@@ -16,7 +16,7 @@ public interface ItemService {
 
     List<ItemDto> search(String text);
 
-    Item checkItem(Long id);
+    Item checkIfItemExist(Long id);
 
-    void checkOwner(Long itemId, Long ownerId);
+    void checkIfUserIsOwner(Item item, Long ownerId);
 }

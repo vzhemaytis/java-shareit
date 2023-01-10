@@ -32,40 +32,40 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto findUser(Long id) {
-        return UserMapper.toUserDto(checkUser(id));
+        return UserMapper.toUserDto(checkIfUserExist(id));
     }
 
     @Transactional
     @Override
     public UserDto addNewUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        return UserMapper.toUserDto(repository.save(user));
+        return UserMapper.toUserDto(repository.saveAndFlush(user));
     }
 
     @Transactional
     @Override
     public UserDto updateUser(UserDto userDto) {
         Long userId = userDto.getId();
-        User existUser = checkUser(userId);
-        User user = UserMapper.toUser(userDto);
-        if (user.getName() != null) {
-            existUser.setName(user.getName());
+        User userToUpdate = checkIfUserExist(userId);
+        if (userDto.getName() != null) {
+            userToUpdate.setName(userDto.getName());
         }
-        if (user.getEmail() != null) {
-            existUser.setEmail(user.getEmail());
+        if (userDto.getEmail() != null) {
+            userToUpdate.setEmail(userDto.getEmail());
         }
-        return UserMapper.toUserDto(repository.save(existUser));
+        return UserMapper.toUserDto(repository.saveAndFlush(userToUpdate));
     }
 
     @Transactional
     @Override
     public void deleteUser(Long id) {
-        repository.deleteById(id);
+        User userToDelete = checkIfUserExist(id);
+        repository.deleteById(userToDelete.getId());
     }
 
     @Transactional
     @Override
-    public User checkUser(Long id) {
+    public User checkIfUserExist(Long id) {
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
             throw new NotFoundException(

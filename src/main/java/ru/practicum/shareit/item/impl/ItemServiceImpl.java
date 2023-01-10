@@ -35,7 +35,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addNewItem(ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
         Long ownerId = itemDto.getOwner();
-        User owner = userService.checkUser(ownerId);
+        User owner = userService.checkIfUserExist(ownerId);
         item.setOwner(owner);
         return ItemMapper.toItemDto(itemRepository.saveAndFlush(item));
     }
@@ -43,8 +43,8 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto updateItem(ItemDto itemDto) {
-        Item itemToUpdate = checkItem(itemDto.getId());
-        checkOwner(itemDto.getId(), itemDto.getOwner());
+        Item itemToUpdate = checkIfItemExist(itemDto.getId());
+        checkIfUserIsOwner(itemToUpdate, itemDto.getOwner());
         if (itemDto.getName() != null) {
             itemToUpdate.setName(itemDto.getName());
         }
@@ -60,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto getItem(Long id, Long userId) {
-        ItemDto itemDto = ItemMapper.toItemDto(checkItem(id));
+        ItemDto itemDto = ItemMapper.toItemDto(checkIfItemExist(id));
         if (!Objects.equals(itemDto.getOwner(), userId)) {
             return itemDto;
         }
@@ -71,11 +71,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsByOwner(Long id) {
         List<Item> items = itemRepository.findAllByOwnerIdIsOrderById(id);
-        List<ItemDto> itemDtos = items.stream()
+        return items.stream()
                 .map(ItemMapper::toItemDto)
+                .map(this::addBookings)
                 .collect(Collectors.toList());
-        itemDtos.forEach(this::addBookings);
-        return itemDtos;
     }
 
     @Transactional
@@ -91,15 +90,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public void checkOwner(Long itemId, Long ownerId) {
-        if (!Objects.equals(ownerId, checkItem(itemId).getOwner().getId())) {
+    public void checkIfUserIsOwner(Item item, Long ownerId) {
+        if (!Objects.equals(ownerId, item.getOwner().getId())) {
             throw new NotFoundException("item can be updated only by owner");
         }
     }
 
     @Transactional
     @Override
-    public Item checkItem(Long id) {
+    public Item checkIfItemExist(Long id) {
         Optional<Item> item = itemRepository.findById(id);
         if (item.isEmpty()) {
             throw new NotFoundException(

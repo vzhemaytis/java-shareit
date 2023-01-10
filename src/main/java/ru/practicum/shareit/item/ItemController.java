@@ -22,8 +22,8 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addNewItem(@Valid @RequestBody @NotNull ItemDto itemDto,
-                              @RequestHeader("X-Sharer-User-Id") Long owner) {
-        itemDto.setOwner(owner);
+                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        itemDto.setOwner(ownerId);
         log.info("save new item = {}", itemDto);
         return itemService.addNewItem(itemDto);
     }
@@ -31,9 +31,9 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ItemDto updateItem(@PathVariable("id") Long id,
                               @RequestBody @NotNull ItemDto itemDto,
-                              @RequestHeader("X-Sharer-User-Id") Long owner) {
+                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         itemDto.setId(id);
-        itemDto.setOwner(owner);
+        itemDto.setOwner(ownerId);
         log.info("update item = {}", itemDto);
         return itemService.updateItem(itemDto);
     }
@@ -46,9 +46,9 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long owner) {
-        log.info("get items with owner id = {}", owner);
-        return itemService.getItemsByOwner(owner);
+    public List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        log.info("get items with owner id = {}", ownerId);
+        return itemService.getItemsByOwner(ownerId);
     }
 
     @GetMapping("/search")

@@ -33,17 +33,14 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto createNewBooking(BookingDto bookingDto, Long bookerId) {
         Long itemId = bookingDto.getItemId();
-        Item item = itemService.checkItem(itemId);
-        User booker = userService.checkUser(bookerId);
+        Item item = itemService.checkIfItemExist(itemId);
+        User booker = userService.checkIfUserExist(bookerId);
 
         if (Objects.equals(item.getOwner().getId(), booker.getId())) {
             throw new UserVerificationException("booking could not be created by item owner");
         }
         if (!item.getAvailable()) {
             throw new BadRequestException("Item is not available");
-        }
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
-            throw new BadRequestException("Start time is after end time");
         }
 
         Booking booking = BookingMapper.toBooking(bookingDto);
@@ -55,10 +52,10 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto approveBooking(Long ownerId, Long bookingId, Boolean approved) {
-        Booking booking = checkBooking(bookingId);
-        User owner = userService.checkUser(ownerId);
-        Long itemId = booking.getItem().getId();
-        itemService.checkOwner(itemId, owner.getId());
+        Booking booking = checkIfBookingExist(bookingId);
+        User owner = userService.checkIfUserExist(ownerId);
+        Item item = booking.getItem();
+        itemService.checkIfUserIsOwner(item, owner.getId());
         if (approved && !booking.getStatus().equals(BookingStatus.APPROVED)) {
             booking.setStatus(BookingStatus.APPROVED);
         } else if (!approved && !booking.getStatus().equals(BookingStatus.REJECTED)) {
@@ -72,24 +69,19 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto getBooking(Long userId, Long bookingId) {
-        User user = userService.checkUser(userId);
-        checkAccess(user.getId(), bookingId);
-        Booking booking = checkBooking(bookingId);
+        User user = userService.checkIfUserExist(userId);
+        Booking booking = checkIfBookingExist(bookingId);
+        checkAccess(user, booking);
         return BookingMapper.toBookingDto(booking);
     }
 
     @Transactional
     @Override
     public List<BookingDto> getUserBookings(Long userId, String state) {
-        User user = userService.checkUser(userId);
+        User user = userService.checkIfUserExist(userId);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
-        BookingState bookingState;
-        try {
-            bookingState = BookingState.valueOf(state);
-        } catch (Throwable e) {
-            throw new BadRequestException(String.format("Unknown state: %s", state));
-        }
+        BookingState bookingState = getBookingState(state);
         switch (bookingState) {
             case ALL:
                 bookings = bookingRepository.findAllByBooker_IdOrderByIdDesc(user.getId());
@@ -118,18 +110,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public List<BookingDto> getOwnerBookings(Long ownerId, String state) {
-        User owner = userService.checkUser(ownerId);
+        User owner = userService.checkIfUserExist(ownerId);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
-        BookingState bookingState;
-        try {
-            bookingState = BookingState.valueOf(state);
-        } catch (Throwable e) {
-            throw new BadRequestException(String.format("Unknown state: %s", state));
-        }
+        BookingState bookingState = getBookingState(state);
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllOwnersBookings(ownerId);
+                bookings = bookingRepository.findAllOwnersBookings(owner.getId());
                 break;
             case PAST:
                 bookings = bookingRepository.findAllOwnersPastBookings(owner.getId(), now);
@@ -144,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllOwnersWaiting(owner.getId());
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllOwnersRejected(ownerId);
+                bookings = bookingRepository.findAllOwnersRejected(owner.getId());
                 break;
         }
         return bookings.stream()
@@ -154,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public Booking checkBooking(Long id) {
+    public Booking checkIfBookingExist(Long id) {
         Optional<Booking> booking = bookingRepository.findById(id);
         if (booking.isEmpty()) {
             throw new NotFoundException(
@@ -163,13 +150,19 @@ public class BookingServiceImpl implements BookingService {
         return booking.get();
     }
 
-    private void checkAccess(Long userId, Long bookingId) {
-        Booking booking = checkBooking(bookingId);
-        User user = userService.checkUser(userId);
+    private void checkAccess(User user, Booking booking) {
         Long ownerId = booking.getItem().getOwner().getId();
         Long bookerId = booking.getBooker().getId();
         if (!Objects.equals(ownerId, user.getId()) && !Objects.equals(bookerId, user.getId())) {
             throw new UserVerificationException("only booker or item owner could get booking info");
+        }
+    }
+
+    private BookingState getBookingState(String state) {
+        try {
+            return BookingState.valueOf(state);
+        } catch (Throwable e) {
+            throw new BadRequestException(String.format("Unknown state: %s", state));
         }
     }
 
