@@ -3,8 +3,8 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.item.dto.ItemInfoDto;
+import ru.practicum.shareit.user.dto.UserInfoDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
@@ -25,7 +25,7 @@ public class BookingDto {
     private LocalDateTime end;
     @NotNull(message = "item id should be not null")
     private Long itemId;
-    private ItemDto item;
-    private UserDto booker;
+    private ItemInfoDto item;
+    private UserInfoDto booker;
     private BookingStatus status;
 }

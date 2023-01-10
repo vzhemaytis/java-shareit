@@ -3,16 +3,20 @@ package ru.practicum.shareit.item.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exeption.EntityNotFoundException;
-import ru.practicum.shareit.exeption.UserVerificationException;
+import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingInfoDto;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,19 +27,16 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final BookingRepository bookingRepository;
 
     @Transactional
     @Override
     public ItemDto addNewItem(ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
         Long ownerId = itemDto.getOwner();
-        Optional<User> owner = userRepository.findById(ownerId);
-        if (owner.isEmpty()) {
-            throw new EntityNotFoundException(
-                    String.format("%s with id= %s not found", User.class.getSimpleName(), ownerId));
-        }
-        item.setOwner(owner.get());
+        User owner = userService.checkUser(ownerId);
+        item.setOwner(owner);
         return ItemMapper.toItemDto(itemRepository.saveAndFlush(item));
     }
 
@@ -58,17 +59,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto getItem(Long id) {
-        return ItemMapper.toItemDto(checkItem(id));
+    public ItemDto getItem(Long id, Long userId) {
+        ItemDto itemDto = ItemMapper.toItemDto(checkItem(id));
+        if (!Objects.equals(itemDto.getOwner(), userId)) {
+            return itemDto;
+        }
+        return addBookings(itemDto);
     }
 
     @Transactional
     @Override
     public List<ItemDto> getItemsByOwner(Long id) {
-        List<Item> items = itemRepository.findAllByOwnerIdIs(id);
-        return items.stream()
+        List<Item> items = itemRepository.findAllByOwnerIdIsOrderById(id);
+        List<ItemDto> itemDtos = items.stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+        itemDtos.forEach(this::addBookings);
+        return itemDtos;
     }
 
     @Transactional
@@ -82,20 +89,42 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public void checkOwner(Long itemId, Long ownerId) {
-        if (!Objects.equals(ownerId, getItem(itemId).getOwner())) {
-            throw new UserVerificationException("item can be updated only by owner");
+        if (!Objects.equals(ownerId, checkItem(itemId).getOwner().getId())) {
+            throw new NotFoundException("item can be updated only by owner");
         }
     }
 
+    @Transactional
     @Override
     public Item checkItem(Long id) {
         Optional<Item> item = itemRepository.findById(id);
         if (item.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw new NotFoundException(
                     String.format("%s with id= %s not found", Item.class.getSimpleName(), id));
         }
         return item.get();
+    }
+
+    private BookingInfoDto getLastItemBooking(Long id) {
+        Optional<Booking> lastBooking =
+                bookingRepository.findFirstByItemIdIsAndEndIsBeforeOrderByEndDesc(id, LocalDateTime.now());
+        return lastBooking.map(BookingMapper::toBookingInfoDto).orElse(null);
+    }
+
+    private BookingInfoDto getNextItemBooking(Long id) {
+        Optional<Booking> nextBooking =
+                bookingRepository.findFirstByItemIdIsAndStartIsAfterOrderByStartAsc(id, LocalDateTime.now());
+        return nextBooking.map(BookingMapper::toBookingInfoDto).orElse(null);
+    }
+
+    private ItemDto addBookings(ItemDto itemDto) {
+        BookingInfoDto lastBookingDto = getLastItemBooking(itemDto.getId());
+        BookingInfoDto nextBookingDto = getNextItemBooking(itemDto.getId());
+        itemDto.setLastBooking(lastBookingDto);
+        itemDto.setNextBooking(nextBookingDto);
+        return itemDto;
     }
 }

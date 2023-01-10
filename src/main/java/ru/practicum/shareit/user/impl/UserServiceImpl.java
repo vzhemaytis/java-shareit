@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exeption.EntityNotFoundException;
+import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
@@ -63,11 +63,12 @@ public class UserServiceImpl implements UserService {
         repository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public User checkUser(Long id) {
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw new NotFoundException(
                     String.format("%s with id= %s not found", User.class.getSimpleName(), id));
         }
         return user.get();

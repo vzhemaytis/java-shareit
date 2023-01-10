@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exeption.BadRequestException;
-import ru.practicum.shareit.exeption.EntityNotFoundException;
+import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.exeption.UserVerificationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
@@ -36,6 +36,9 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemService.checkItem(itemId);
         User booker = userService.checkUser(bookerId);
 
+        if (Objects.equals(item.getOwner().getId(), booker.getId())) {
+            throw new UserVerificationException("booking could not be created by item owner");
+        }
         if (!item.getAvailable()) {
             throw new BadRequestException("Item is not available");
         }
@@ -56,10 +59,12 @@ public class BookingServiceImpl implements BookingService {
         User owner = userService.checkUser(ownerId);
         Long itemId = booking.getItem().getId();
         itemService.checkOwner(itemId, owner.getId());
-        if (approved) {
+        if (approved && !booking.getStatus().equals(BookingStatus.APPROVED)) {
             booking.setStatus(BookingStatus.APPROVED);
-        } else {
+        } else if (!approved && !booking.getStatus().equals(BookingStatus.REJECTED)) {
             booking.setStatus(BookingStatus.REJECTED);
+        } else {
+            throw new BadRequestException("Booking status was already changed");
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
@@ -98,9 +103,11 @@ public class BookingServiceImpl implements BookingService {
             case CURRENT:
                 bookings = bookingRepository.findAllCurrentBookings(user.getId(), now);
                 break;
+            case WAITING:
+                bookings = bookingRepository.findAllWaiting(user.getId());
+                break;
             case REJECTED:
-                bookings = bookingRepository
-                    .findAllRejected(user.getId());
+                bookings = bookingRepository.findAllRejected(user.getId());
                 break;
         }
         return bookings.stream()
@@ -133,9 +140,11 @@ public class BookingServiceImpl implements BookingService {
             case CURRENT:
                 bookings = bookingRepository.findAllOwnersCurrentBookings(owner.getId(), now);
                 break;
+            case WAITING:
+                bookings = bookingRepository.findAllOwnersWaiting(owner.getId());
+                break;
             case REJECTED:
-                bookings = bookingRepository
-                        .findAllOwnersRejected(ownerId);
+                bookings = bookingRepository.findAllOwnersRejected(ownerId);
                 break;
         }
         return bookings.stream()
@@ -148,7 +157,7 @@ public class BookingServiceImpl implements BookingService {
     public Booking checkBooking(Long id) {
         Optional<Booking> booking = bookingRepository.findById(id);
         if (booking.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw new NotFoundException(
                     String.format("%s with id= %s not found", Booking.class.getSimpleName(), id));
         }
         return booking.get();
@@ -163,4 +172,6 @@ public class BookingServiceImpl implements BookingService {
             throw new UserVerificationException("only booker or item owner could get booking info");
         }
     }
+
+
 }

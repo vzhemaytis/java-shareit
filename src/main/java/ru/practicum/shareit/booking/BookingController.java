@@ -32,12 +32,15 @@ public class BookingController {
     public BookingDto approveBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                      @PathVariable("bookingId") Long bookingId,
                                      @RequestParam(name = "approved") Boolean approved) {
+        log.info("try to set approved to booking with id = {} as {} by user with id = {}"
+                , bookingId, approved, ownerId);
         return bookingService.approveBooking(ownerId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                  @PathVariable("bookingId") Long bookingId) {
+        log.info("try to get booking with id = {} by user with id = {}", bookingId, userId);
         return bookingService.getBooking(userId, bookingId);
     }
 
@@ -46,6 +49,7 @@ public class BookingController {
                                             @RequestParam(name = "state"
                                                     , required = false
                                                     , defaultValue = "ALL") String state) {
+        log.info("get all booking of user with id = {} with state = {}", userId, state);
         return bookingService.getUserBookings(userId, state);
     }
 
@@ -54,6 +58,7 @@ public class BookingController {
                                             @RequestParam(name = "state"
                                                     , required = false
                                                     , defaultValue = "ALL") String state) {
+        log.info("get all bookings for items with owner with id = {} and state = {}" , ownerId, state);
         return bookingService.getOwnerBookings(ownerId, state);
     }
 
