@@ -42,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto updateItem(ItemDto itemDto) {
-        Item itemToUpdate = findItem(itemDto.getId());
+        Item itemToUpdate = checkItem(itemDto.getId());
         checkOwner(itemDto.getId(), itemDto.getOwner());
         if (itemDto.getName() != null) {
             itemToUpdate.setName(itemDto.getName());
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto getItem(Long id) {
-        return ItemMapper.toItemDto(findItem(id));
+        return ItemMapper.toItemDto(checkItem(id));
     }
 
     @Transactional
@@ -82,18 +82,19 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
-
-    private void checkOwner(Long itemId, Long ownerId) {
+    @Override
+    public void checkOwner(Long itemId, Long ownerId) {
         if (!Objects.equals(ownerId, getItem(itemId).getOwner())) {
             throw new UserVerificationException("item can be updated only by owner");
         }
     }
 
-    private Item findItem(Long itemId) {
-        Optional<Item> item = itemRepository.findById(itemId);
+    @Override
+    public Item checkItem(Long id) {
+        Optional<Item> item = itemRepository.findById(id);
         if (item.isEmpty()) {
             throw new EntityNotFoundException(
-                    String.format("%s with id= %s not found", Item.class.getSimpleName(), itemId));
+                    String.format("%s with id= %s not found", Item.class.getSimpleName(), id));
         }
         return item.get();
     }

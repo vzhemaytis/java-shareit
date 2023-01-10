@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.user.UserMapper;
 
 public class BookingMapper {
 
@@ -14,8 +16,8 @@ public class BookingMapper {
                 booking.getStart(),
                 booking.getEnd(),
                 booking.getItem().getId(),
-                booking.getItem().getName(),
-                booking.getBooker().getId(),
+                ItemMapper.toItemDto(booking.getItem()),
+                UserMapper.toUserDto(booking.getBooker()),
                 booking.getStatus()
         );
     }
