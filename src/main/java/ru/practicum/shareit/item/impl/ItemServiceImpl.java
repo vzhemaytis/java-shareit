@@ -87,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
         List<Long> itemIds = items.stream().map(ItemDto::getId).collect(Collectors.toList());
-        List<Comment> comments = commentRepository.findAllByItem_IdIn(itemIds);
+        List<Comment> comments = commentRepository.findAllByItemIdIn(itemIds);
         List<Booking> bookings = bookingRepository.findAllByItem_IdIn(itemIds);
         return items.stream()
                 .map(i -> findComments(i, comments))

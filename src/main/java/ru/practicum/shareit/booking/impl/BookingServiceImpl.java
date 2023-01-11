@@ -84,7 +84,7 @@ public class BookingServiceImpl implements BookingService {
         BookingState bookingState = getBookingState(state);
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllByBooker_IdOrderByIdDesc(user.getId());
+                bookings = bookingRepository.findAllByBookerIdOrderByIdDesc(user.getId());
                 break;
             case PAST:
                 bookings = bookingRepository.findAllPastBookings(user.getId(), now);
