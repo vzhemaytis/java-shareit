@@ -12,6 +12,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findFirstByItemIdIsAndEndIsBeforeOrderByEndDesc(Long id, LocalDateTime now);
     Optional<Booking> findFirstByItemIdIsAndStartIsAfterOrderByStartAsc(Long id, LocalDateTime now);
     List<Booking> findAllByBooker_IdOrderByIdDesc(Long id);
+    List<Booking> findAllByItem_IdIn(List<Long> ids);
 
     @Query(" select b from Booking b " +
             "where b.booker.id = ?1 " +

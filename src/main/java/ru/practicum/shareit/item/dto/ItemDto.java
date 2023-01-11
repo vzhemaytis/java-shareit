@@ -3,10 +3,12 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
+import ru.practicum.shareit.comment.dto.CommentDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
@@ -26,4 +28,5 @@ public class ItemDto {
     private final Long request;
     private BookingInfoDto lastBooking;
     private BookingInfoDto nextBooking;
+    private List<CommentDto> comments;
 }

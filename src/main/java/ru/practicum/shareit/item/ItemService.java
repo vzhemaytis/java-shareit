@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -19,4 +20,6 @@ public interface ItemService {
     Item checkIfItemExist(Long id);
 
     void checkIfUserIsOwner(Item item, Long ownerId);
+
+    CommentDto addComment(Long id, Long authorId, CommentDto commentDto);
 }

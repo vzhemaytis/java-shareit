@@ -7,6 +7,11 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.comment.CommentMapper;
+import ru.practicum.shareit.comment.CommentRepository;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
@@ -17,6 +22,7 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     @Override
@@ -61,6 +68,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItem(Long id, Long userId) {
         ItemDto itemDto = ItemMapper.toItemDto(checkIfItemExist(id));
+        List<CommentDto> comments = commentRepository
+                .findAllByItem_IdIs(id).stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+        itemDto.setComments(comments);
         if (!Objects.equals(itemDto.getOwner(), userId)) {
             return itemDto;
         }
@@ -70,11 +82,29 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public List<ItemDto> getItemsByOwner(Long id) {
-        List<Item> items = itemRepository.findAllByOwnerIdIsOrderById(id);
-        return items.stream()
+        List<ItemDto> items = itemRepository
+                .findAllByOwnerIdIsOrderById(id).stream()
                 .map(ItemMapper::toItemDto)
-                .map(this::addBookings)
                 .collect(Collectors.toList());
+        List<Long> itemIds = items.stream().map(ItemDto::getId).collect(Collectors.toList());
+        List<Comment> comments = commentRepository.findAllByItem_IdIn(itemIds);
+        List<Booking> bookings = bookingRepository.findAllByItem_IdIn(itemIds);
+        return items.stream()
+                .map(i -> findComments(i, comments))
+                .map(i -> setLastAndNextBookings(i, bookings))
+                .collect(Collectors.toList());
+    }
+
+    private ItemDto setLastAndNextBookings(ItemDto itemDto, List<Booking> bookings) {
+        Optional<Booking> lastBooking = bookings.stream()
+                .filter(b -> b.getItem().getId().equals(itemDto.getId()))
+                .filter(b -> b.getEnd().isBefore(LocalDateTime.now())).max(Comparator.comparing(Booking::getEnd));
+        Optional<Booking> nextBooking = bookings.stream()
+                .filter(b -> b.getItem().getId().equals(itemDto.getId()))
+                .filter(b -> b.getStart().isAfter(LocalDateTime.now())).min(Comparator.comparing(Booking::getStart));
+        itemDto.setLastBooking(lastBooking.map(BookingMapper::toBookingInfoDto).orElse(null));
+        itemDto.setNextBooking(nextBooking.map(BookingMapper::toBookingInfoDto).orElse(null));
+        return itemDto;
     }
 
     @Transactional
@@ -107,6 +137,25 @@ public class ItemServiceImpl implements ItemService {
         return item.get();
     }
 
+    @Transactional
+    @Override
+    public CommentDto addComment(Long id, Long authorId, CommentDto commentDto) {
+        User author = userService.checkIfUserExist(authorId);
+        Item item = checkIfItemExist(id);
+        LocalDateTime now = LocalDateTime.now();
+        List<Booking> pastBookings = bookingRepository.findAllPastBookings(author.getId(), now);
+        Optional<Booking> booking = pastBookings.stream()
+                .filter(b -> b.getItem().getId().equals(item.getId()))
+                .findFirst();
+        if (booking.isEmpty()) {
+            throw new BadRequestException("user can't comment item without past bookings");
+        }
+        Comment comment = CommentMapper.toComment(commentDto);
+        comment.setItem(item);
+        comment.setAuthor(author);
+        return CommentMapper.toCommentDto(commentRepository.saveAndFlush(comment));
+    }
+
     private BookingInfoDto getLastItemBooking(Long id) {
         Optional<Booking> lastBooking =
                 bookingRepository.findFirstByItemIdIsAndEndIsBeforeOrderByEndDesc(id, LocalDateTime.now());
@@ -124,6 +173,15 @@ public class ItemServiceImpl implements ItemService {
         BookingInfoDto nextBookingDto = getNextItemBooking(itemDto.getId());
         itemDto.setLastBooking(lastBookingDto);
         itemDto.setNextBooking(nextBookingDto);
+        return itemDto;
+    }
+
+    private ItemDto findComments(ItemDto itemDto, List<Comment> comments) {
+        List<CommentDto> commentsToAdd = comments.stream()
+                .filter(comment -> comment.getItem().getId().equals(itemDto.getId()))
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+        itemDto.setComments(commentsToAdd);
         return itemDto;
     }
 }
