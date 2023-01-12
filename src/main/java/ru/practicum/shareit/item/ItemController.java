@@ -3,10 +3,12 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -22,8 +24,8 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addNewItem(@Valid @RequestBody @NotNull ItemDto itemDto,
-                              @RequestHeader("X-Sharer-User-Id") Long owner) {
-        itemDto.setOwner(owner);
+                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        itemDto.setOwner(ownerId);
         log.info("save new item = {}", itemDto);
         return itemService.addNewItem(itemDto);
     }
@@ -31,29 +33,38 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ItemDto updateItem(@PathVariable("id") Long id,
                               @RequestBody @NotNull ItemDto itemDto,
-                              @RequestHeader("X-Sharer-User-Id") Long owner) {
+                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         itemDto.setId(id);
-        itemDto.setOwner(owner);
+        itemDto.setOwner(ownerId);
         log.info("update item = {}", itemDto);
         return itemService.updateItem(itemDto);
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItem(@PathVariable("id") Long id) {
-        log.info("get item with id = {}", id);
-        return itemService.getItem(id);
+    public ItemDto getItem(@PathVariable("id") Long id,
+                           @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("get item with id = {} from user with id = {}", id, userId);
+        return itemService.getItem(id, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long owner) {
-        log.info("get items with owner id = {}", owner);
-        return itemService.getItemsByOwner(owner);
+    public List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        log.info("get items with owner id = {}", ownerId);
+        return itemService.getItemsByOwner(ownerId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam(name = "text") String text) {
         log.info("search items name or desc contains = {}", text);
         return itemService.search(text);
+    }
+
+    @PostMapping("/{id}/comment")
+    public CommentDto addComment(@PathVariable("id") Long id,
+                                 @RequestHeader("X-Sharer-User-Id") Long authorId,
+                                 @Valid @RequestBody @NotNull CommentDto commentDto) {
+        commentDto.setCreated(LocalDateTime.now());
+        return itemService.addComment(id, authorId, commentDto);
     }
 
 }
