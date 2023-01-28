@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
@@ -77,14 +78,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public List<BookingDto> getUserBookings(Long userId, String state) {
+    public List<BookingDto> getUserBookings(Long userId, String state, Long from, Integer size) {
         User user = userService.checkIfUserExist(userId);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         BookingState bookingState = getBookingState(state);
+        int startPage = Math.toIntExact(from / size);
+        PageRequest pageRequest = PageRequest.of(startPage, size);
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerIdOrderByIdDesc(user.getId());
+                bookings = bookingRepository.findAllByBookerIdOrderByIdDesc(user.getId(), pageRequest);
                 break;
             case PAST:
                 bookings = bookingRepository.findAllPastBookings(user.getId(), now);
@@ -109,14 +112,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public List<BookingDto> getOwnerBookings(Long ownerId, String state) {
+    public List<BookingDto> getOwnerBookings(Long ownerId, String state, Long from, Integer size) {
         User owner = userService.checkIfUserExist(ownerId);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         BookingState bookingState = getBookingState(state);
+        int startPage = Math.toIntExact(from / size);
+        PageRequest pageRequest = PageRequest.of(startPage, size);
         switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.findAllOwnersBookings(owner.getId());
+                bookings = bookingRepository.findAllOwnersBookings(owner.getId(), pageRequest);
                 break;
             case PAST:
                 bookings = bookingRepository.findAllOwnersPastBookings(owner.getId(), now);

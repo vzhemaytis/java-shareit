@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.model;
 
 import lombok.Data;
 import ru.practicum.shareit.user.model.User;
@@ -6,9 +6,6 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Entity
 @Table(name = "requests")
 @Data
@@ -22,7 +19,10 @@ public class ItemRequest {
     private User requestor;
     private LocalDateTime created;
 
-    public ItemRequest() {
+    public ItemRequest(String description) {
+        this.description = description;
+    }
 
+    public ItemRequest() {
     }
 }

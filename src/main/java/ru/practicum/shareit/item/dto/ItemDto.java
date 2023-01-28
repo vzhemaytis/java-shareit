@@ -25,7 +25,7 @@ public class ItemDto {
     @NotNull (message = "item available should be not null")
     private final Boolean available;
     private Long owner;
-    private final Long request;
+    private final Long requestId;
     private BookingInfoDto lastBooking;
     private BookingInfoDto nextBooking;
     private List<CommentDto> comments;

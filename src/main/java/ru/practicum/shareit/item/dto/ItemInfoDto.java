@@ -8,4 +8,5 @@ import lombok.Data;
 public class ItemInfoDto {
     private Long id;
     private String name;
+    private Long ownerId;
 }
