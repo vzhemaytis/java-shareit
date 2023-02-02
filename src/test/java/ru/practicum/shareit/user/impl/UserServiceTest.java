@@ -23,12 +23,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserServiceTest {
 
     @Mock
-    protected UserRepository userRepository;
+    UserRepository userRepository;
     @InjectMocks
-    protected UserServiceImpl userService;
+    UserServiceImpl userService;
     User user1;
     User user2;
 

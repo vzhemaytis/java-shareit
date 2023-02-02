@@ -175,13 +175,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public List<Item> getItemsByRequestId(List<Long> requestIds) {
+    public List<Item> getItemsByRequestIdIn(List<Long> requestIds) {
         return itemRepository.findAllByRequestIdIn(requestIds);
     }
 
     @Transactional
     @Override
-    public List<Item> getItemByRequestId(Long requestId) {
+    public List<Item> getItemsByRequestId(Long requestId) {
         return itemRepository.findAllByRequestId(requestId);
     }
 

@@ -18,15 +18,18 @@ import java.util.List;
 public class ItemDto {
     private Long id;
     @NotBlank (message = "item name should be not blank or null")
-    private final String name;
+    private String name;
     @NotBlank (message = "item description should be not blank or null")
     @Size(max = 200, message = "item description should be not longer than 200 letters")
-    private final String description;
+    private String description;
     @NotNull (message = "item available should be not null")
-    private final Boolean available;
+    private Boolean available;
     private Long owner;
-    private final Long requestId;
+    private Long requestId;
     private BookingInfoDto lastBooking;
     private BookingInfoDto nextBooking;
     private List<CommentDto> comments;
+
+    public ItemDto() {
+    }
 }

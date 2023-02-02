@@ -51,7 +51,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
         List<Long> requestIds = requests.stream().map(ItemRequestDto::getId).collect(Collectors.toList());
-        List<Item> items = itemService.getItemsByRequestId(requestIds);
+        List<Item> items = itemService.getItemsByRequestIdIn(requestIds);
         return requests.stream().map(r -> findItems(r, items)).collect(Collectors.toList());
     }
 
@@ -66,7 +66,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .stream().map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
         List<Long> requestIds = requests.stream().map(ItemRequestDto::getId).collect(Collectors.toList());
-        List<Item> items = itemService.getItemsByRequestId(requestIds);
+        List<Item> items = itemService.getItemsByRequestIdIn(requestIds);
         return requests.stream().map(r -> findItems(r, items)).collect(Collectors.toList());
     }
 
@@ -78,7 +78,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (itemRequest.isEmpty()) {
             throw new NotFoundException(String.format("request with id = %s not found", requestId));
         }
-        List<Item> items = itemService.getItemByRequestId(requestId);
+        List<Item> items = itemService.getItemsByRequestId(requestId);
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest.get());
         return findItems(itemRequestDto, items);
     }
