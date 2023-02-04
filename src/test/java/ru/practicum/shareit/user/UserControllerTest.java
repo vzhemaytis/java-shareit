@@ -3,7 +3,6 @@ package ru.practicum.shareit.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -43,7 +42,7 @@ class UserControllerTest {
 
     @Test
     void getUsers_whenNoUsers_thenReturnStatusOkAndEmptyListJson() throws Exception {
-        Mockito.when(userService.getUsers()).thenReturn(List.of());
+        when(userService.getUsers()).thenReturn(List.of());
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -54,7 +53,7 @@ class UserControllerTest {
 
     @Test
     void getUsers_whenFound_thenReturnStatusOkAndUsersListJson() throws Exception {
-        Mockito.when(userService.getUsers()).thenReturn(List.of(userDto));
+        when(userService.getUsers()).thenReturn(List.of(userDto));
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
@@ -67,7 +66,7 @@ class UserControllerTest {
 
     @Test
     void findUser_whenFound_thenReturnStatusOkAndUserJson() throws Exception {
-        Mockito.when(userService.findUser(1L)).thenReturn(userDto);
+        when(userService.findUser(1L)).thenReturn(userDto);
 
         mockMvc.perform(get("/users/{id}", 1L))
                 .andExpect(status().isOk())
@@ -80,7 +79,7 @@ class UserControllerTest {
 
     @Test
     void findUser_whenNotFound_thenRetrunStatusNotFound() throws Exception {
-        Mockito.when(userService.findUser(1L)).thenThrow(new NotFoundException("not found"));
+        when(userService.findUser(1L)).thenThrow(new NotFoundException("not found"));
         mockMvc.perform(get("/users/{id}", 1L))
                 .andExpect(status().isNotFound());
         verify(userService, times(1)).findUser(1L);
@@ -115,6 +114,7 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest());
         verify(userService, never()).addNewUser(userDto);
 
+        userDto.setName("name");
         userDto.setEmail("");
         when(userService.addNewUser(userDto)).thenReturn(userDto);
 
