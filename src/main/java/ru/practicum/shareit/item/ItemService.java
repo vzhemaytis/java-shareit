@@ -22,6 +22,8 @@ public interface ItemService {
     void checkIfUserIsOwner(Item item, Long ownerId);
 
     CommentDto addComment(Long id, Long authorId, CommentDto commentDto);
+
     List<Item> getItemsByRequestIdIn(List<Long> requestIds);
+
     List<Item> getItemsByRequestId(Long requestId);
 }

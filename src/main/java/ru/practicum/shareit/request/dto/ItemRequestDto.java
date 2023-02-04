@@ -17,10 +17,11 @@ public class ItemRequestDto {
     private Long id;
     @NotBlank(message = "request description could not be null or blank")
     private String description;
-    private Long requestor_id;
+    private Long requestorId;
     private LocalDateTime created;
     private List<ItemDto> items;
 
     public ItemRequestDto() {
+
     }
 }
