@@ -7,4 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserInfoDto {
     private Long id;
+
+    public UserInfoDto() {
+    }
 }
