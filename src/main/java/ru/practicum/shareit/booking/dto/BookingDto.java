@@ -30,4 +30,6 @@ public class BookingDto {
     private ItemInfoDto item;
     private UserInfoDto booker;
     private BookingStatus status;
+
+
 }

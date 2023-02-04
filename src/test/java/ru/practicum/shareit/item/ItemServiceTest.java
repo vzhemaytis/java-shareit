@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.impl;
+package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
-import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
@@ -29,8 +28,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceTest {
@@ -124,6 +122,7 @@ class ItemServiceTest {
                 () -> assertNull(savedItemDto.getNextBooking()),
                 () -> assertNull(savedItemDto.getComments())
         );
+        verify(itemRepository, atMostOnce()).saveAndFlush(any(Item.class));
     }
 
     @Test
@@ -234,7 +233,7 @@ class ItemServiceTest {
     @Test
     void getItem_WhenUserNotOwner_ThenReturnItemDto() {
         Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(itemToReturn));
-        Mockito.when(commentRepository.findAllByItem_IdIs(1L)).thenReturn(List.of(comment));
+        Mockito.when(commentRepository.findAllByItemIdIs(1L)).thenReturn(List.of(comment));
 
         ItemDto actualDto = itemService.getItem(1L, 2L);
 
@@ -244,13 +243,14 @@ class ItemServiceTest {
                 () -> assertNull(actualDto.getNextBooking()),
                 () -> assertNull(actualDto.getLastBooking())
         );
+        verify(itemRepository).findById(1L);
     }
 
     @Test
     void getItem_WhenUserOwner_ThenReturnItemDto() {
         Long itemId = 1L;
         Mockito.when(itemRepository.findById(itemId)).thenReturn(Optional.of(itemToReturn));
-        Mockito.when(commentRepository.findAllByItem_IdIs(itemId)).thenReturn(List.of(comment));
+        Mockito.when(commentRepository.findAllByItemIdIs(itemId)).thenReturn(List.of(comment));
         Mockito.when(bookingRepository
                         .findFirstByItemIdIsAndEndIsBeforeOrderByEndDesc(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(lastBooking));
@@ -266,6 +266,7 @@ class ItemServiceTest {
                 () -> assertEquals(1L, actualDto.getLastBooking().getId()),
                 () -> assertEquals(2L, actualDto.getNextBooking().getId())
         );
+        verify(itemRepository).findById(1L);
     }
 
     @Test
@@ -277,6 +278,7 @@ class ItemServiceTest {
                 NotFoundException.class,
                 () -> itemService.getItem(1L, 1L)
         );
+        verify(itemRepository).findById(1L);
     }
 
     @Test
@@ -346,6 +348,7 @@ class ItemServiceTest {
         Item returnedItem = itemService.checkIfItemExist(1L);
 
         assertEquals(itemToReturn, returnedItem);
+        verify(itemRepository).findById(1L);
     }
 
     @Test

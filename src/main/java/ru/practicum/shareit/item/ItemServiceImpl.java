@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.impl;
+package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +14,6 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.exeption.BadRequestException;
 import ru.practicum.shareit.exeption.NotFoundException;
-import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
@@ -82,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItem(Long id, Long userId) {
         ItemDto itemDto = ItemMapper.toItemDto(checkIfItemExist(id));
         List<CommentDto> comments = commentRepository
-                .findAllByItem_IdIs(id).stream()
+                .findAllByItemIdIs(id).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
         itemDto.setComments(comments);
