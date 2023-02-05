@@ -75,15 +75,4 @@ public class ItemRequestDto {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "ItemRequestDto{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", requestorId=" + requestorId +
-                ", created=" + created +
-                ", items=" + items +
-                '}';
-    }
 }

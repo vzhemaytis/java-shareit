@@ -58,14 +58,4 @@ public class CommentDto {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "CommentDto{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", created=" + created +
-                '}';
-    }
 }

@@ -69,13 +69,4 @@ public class ItemRequest {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "ItemRequest{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", created=" + created +
-                '}';
-    }
 }
