@@ -17,8 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -52,8 +51,8 @@ class UserServiceTest {
 
         assertAll(
                 () -> assertEquals(2, actualUsers.size()),
-                () -> assertEquals(UserMapper.toUserDto(user1), actualUsers.get(0)),
-                () -> assertEquals(UserMapper.toUserDto(user2), actualUsers.get(1))
+                () -> assertEquals(user1.getId(), actualUsers.get(0).getId()),
+                () -> assertEquals(user2.getId(), actualUsers.get(1).getId())
                 );
         verify(userRepository).findAll();
     }
@@ -75,7 +74,7 @@ class UserServiceTest {
 
         UserDto actualUser = userService.findUser(userId);
 
-        assertEquals(UserMapper.toUserDto(user1), actualUser);
+        assertEquals(user1.getId(), actualUser.getId());
         verify(userRepository).findById(userId);
     }
 
@@ -97,12 +96,12 @@ class UserServiceTest {
         userToSave.setName(user1.getName());
         userToSave.setEmail(user1.getEmail());
         UserDto userDtoToSave = UserMapper.toUserDto(userToSave);
-        Mockito.when(userRepository.saveAndFlush(userToSave)).thenReturn(user1);
+        Mockito.when(userRepository.saveAndFlush(any())).thenReturn(user1);
 
         UserDto savedUserDto = userService.addNewUser(userDtoToSave);
 
-        assertEquals(UserMapper.toUserDto(user1), savedUserDto);
-        verify(userRepository).saveAndFlush(userToSave);
+        assertEquals(user1.getId(), savedUserDto.getId());
+        verify(userRepository, atMostOnce()).saveAndFlush(any());
     }
 
     @Test

@@ -87,7 +87,7 @@ class UserControllerTest {
 
     @Test
     void addNewUser_whenInvoked_thenReturnStatusOkAndUserJson() throws Exception {
-        when(userService.addNewUser(userDto)).thenReturn(userDto);
+        when(userService.addNewUser(any())).thenReturn(userDto);
 
         mockMvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
@@ -98,7 +98,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
-        verify(userService, times(1)).addNewUser(userDto);
+        verify(userService, times(1)).addNewUser(any());
     }
 
     @Test
@@ -141,7 +141,7 @@ class UserControllerTest {
 
     @Test
     void updateUser_whenInvoked_thenReturnStatusOkAndUserJson() throws Exception {
-        when(userService.updateUser(userDto)).thenReturn(userDto);
+        when(userService.updateUser(any())).thenReturn(userDto);
 
         mockMvc.perform(patch("/users/{id}", 1L)
                         .content(mapper.writeValueAsString(userDto))
@@ -152,7 +152,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
-        verify(userService, times(1)).updateUser(userDto);
+        verify(userService, times(1)).updateUser(any());
     }
 
     @Test

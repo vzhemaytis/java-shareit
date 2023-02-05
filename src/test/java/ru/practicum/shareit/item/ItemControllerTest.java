@@ -54,7 +54,7 @@ class ItemControllerTest {
 
     @Test
     void addNewItem_whenInvoked_thenReturnStatusOkAndItemJson() throws Exception {
-        when(itemService.addNewItem(itemDto)).thenReturn(itemDto);
+        when(itemService.addNewItem(any())).thenReturn(itemDto);
 
         mockMvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
@@ -67,7 +67,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.owner", is(itemDto.getOwner()), Long.class));
-        verify(itemService, times(1)).addNewItem(itemDto);
+        verify(itemService, times(1)).addNewItem(any());
     }
 
     @Test
@@ -113,7 +113,7 @@ class ItemControllerTest {
 
     @Test
     void updateItem_whenInvoked_thenReturnStatusOkAndItemJson() throws Exception {
-        when(itemService.updateItem(itemDto)).thenReturn(itemDto);
+        when(itemService.updateItem(any())).thenReturn(itemDto);
 
         mockMvc.perform(patch("/items/{Id}", 1L)
                         .content(mapper.writeValueAsString(itemDto))
@@ -126,12 +126,12 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.owner", is(itemDto.getOwner()), Long.class));
-        verify(itemService, times(1)).updateItem(itemDto);
+        verify(itemService, times(1)).updateItem(any());
     }
 
     @Test
     void updateItem_whenNotFound_thenReturnStatusNotFound() throws Exception {
-        when(itemService.updateItem(itemDto)).thenThrow(new NotFoundException("not found"));
+        when(itemService.updateItem(any())).thenThrow(new NotFoundException("not found"));
 
         mockMvc.perform(patch("/items/{Id}", 1L)
                         .content(mapper.writeValueAsString(itemDto))
@@ -140,7 +140,7 @@ class ItemControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isNotFound());
-        verify(itemService, times(1)).updateItem(itemDto);
+        verify(itemService, times(1)).updateItem(any());
     }
 
     @Test

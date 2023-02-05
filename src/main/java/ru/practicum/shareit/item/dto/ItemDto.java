@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
 
@@ -8,11 +10,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.
  */
+@Getter
+@Setter
 @AllArgsConstructor
 public class ItemDto {
     private Long id;
@@ -102,18 +105,5 @@ public class ItemDto {
 
     public void setComments(List<CommentDto> comments) {
         this.comments = comments;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemDto itemDto = (ItemDto) o;
-        return id.equals(itemDto.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
