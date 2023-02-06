@@ -24,7 +24,10 @@ public class ItemMapper {
     }
 
     public static ItemInfoDto toItemInfoDto(Item item) {
-        return new ItemInfoDto(item.getId(), item.getName());
+        return new ItemInfoDto(
+                item.getId(),
+                item.getName(),
+                item.getOwner().getId());
     }
 
     public static Item toItem(ItemDto itemDto) {

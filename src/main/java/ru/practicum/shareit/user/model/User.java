@@ -7,9 +7,11 @@ import javax.persistence.*;
 /**
  * TODO Sprint add-controllers.
  */
+
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
-@Data
 @AllArgsConstructor
 public class User {
     @Id

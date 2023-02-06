@@ -1,7 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.validator.StartAndEndValid;
 import ru.practicum.shareit.item.dto.ItemInfoDto;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
 /**
  * TODO Sprint add-bookings.
  */
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @StartAndEndValid
 public class BookingDto {
