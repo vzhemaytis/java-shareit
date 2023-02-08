@@ -2,14 +2,10 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,14 +15,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
-@Validated
 @Slf4j
 public class ItemController {
 
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto addNewItem(@Valid @RequestBody @NotNull ItemDto itemDto,
+    public ItemDto addNewItem(@RequestBody ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         itemDto.setOwner(ownerId);
         log.info("save new item = {}", itemDto);
@@ -35,7 +30,7 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ItemDto updateItem(@PathVariable("id") Long id,
-                              @RequestBody @NotNull ItemDto itemDto,
+                              @RequestBody ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         itemDto.setId(id);
         itemDto.setOwner(ownerId);
@@ -53,8 +48,8 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItemsByOwner(
             @RequestHeader("X-Sharer-User-Id") Long ownerId,
-            @RequestParam(name = "from", required = false, defaultValue = "0") @Min(value = 0) Long from,
-            @RequestParam(name = "size", required = false, defaultValue = "10") @Min(value = 1) Integer size
+            @RequestParam(name = "from") Long from,
+            @RequestParam(name = "size") Integer size
     ) {
         log.info("get items with owner id = {}", ownerId);
         return itemService.getItemsByOwner(ownerId, from, size);
@@ -63,8 +58,8 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> search(
             @RequestParam(name = "text") String text,
-            @RequestParam(name = "from", required = false, defaultValue = "0") @Min(value = 0) Long from,
-            @RequestParam(name = "size", required = false, defaultValue = "10") @Min(value = 1) Integer size
+            @RequestParam(name = "from") Long from,
+            @RequestParam(name = "size") Integer size
     ) {
         log.info("search items name or desc contains = {}", text);
         return itemService.search(text, from, size);
@@ -73,7 +68,7 @@ public class ItemController {
     @PostMapping("/{id}/comment")
     public CommentDto addComment(@PathVariable("id") Long id,
                                  @RequestHeader("X-Sharer-User-Id") Long authorId,
-                                 @Valid @RequestBody @NotNull CommentDto commentDto) {
+                                 @RequestBody CommentDto commentDto) {
         commentDto.setCreated(LocalDateTime.now());
         return itemService.addComment(id, authorId, commentDto);
     }

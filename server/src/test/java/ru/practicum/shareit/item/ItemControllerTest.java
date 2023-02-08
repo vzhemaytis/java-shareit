@@ -71,47 +71,6 @@ class ItemControllerTest {
     }
 
     @Test
-    void addNewItem_whenNotValid_thenReturnStatusBadRequest() throws Exception {
-        itemDto.setName("");
-        when(itemService.addNewItem(itemDto)).thenReturn(itemDto);
-
-        mockMvc.perform(post("/items")
-                        .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).addNewItem(itemDto);
-
-        itemDto.setName("name");
-        itemDto.setDescription("");
-        when(itemService.addNewItem(itemDto)).thenReturn(itemDto);
-
-        mockMvc.perform(post("/items")
-                        .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).addNewItem(itemDto);
-
-        itemDto.setDescription("desc");
-        itemDto.setAvailable(null);
-        when(itemService.addNewItem(itemDto)).thenReturn(itemDto);
-
-        mockMvc.perform(post("/items")
-                        .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(itemService, never()).addNewItem(itemDto);
-    }
-
-    @Test
     void updateItem_whenInvoked_thenReturnStatusOkAndItemJson() throws Exception {
         when(itemService.updateItem(any())).thenReturn(itemDto);
 
@@ -204,19 +163,5 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.text", is(commentDto.getText())))
                 .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())));
         verify(itemService, times(1)).addComment(any(), any(), any());
-    }
-
-    @Test
-    void addComment_whenNotValid_thenReturnStatusBadRequest() throws Exception {
-        commentDto.setText("");
-        when(itemService.addComment(any(), any(), any())).thenReturn(commentDto);
-
-        mockMvc.perform(post("/items/{id}/comment", 1L)
-                        .content(mapper.writeValueAsString(commentDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
     }
 }

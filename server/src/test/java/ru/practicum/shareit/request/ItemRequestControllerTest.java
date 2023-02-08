@@ -60,21 +60,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void createNewRequest_whenNotValid_thenReturnStatusBadRequest() throws Exception {
-        requestDto.setDescription("");
-        when(service.createNewRequest(any(), any())).thenReturn(requestDto);
-
-        mockMvc.perform(post("/requests")
-                        .content(mapper.writeValueAsString(requestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(service, never()).createNewRequest(any(), any());
-    }
-
-    @Test
     void getUsersRequests_whenInvoked_thenReturnStatusOkAndListOfRequestsJson() throws Exception {
         when(service.getUsersRequests(any())).thenReturn(List.of(requestDto));
 

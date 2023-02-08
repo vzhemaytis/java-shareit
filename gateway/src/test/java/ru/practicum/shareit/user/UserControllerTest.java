@@ -45,7 +45,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
-        verify(userClient, never()).addNewUser(userDto);
+        verify(userClient, never()).addNewUser(any());
 
         userDto.setName("name");
         userDto.setEmail("");
@@ -57,7 +57,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
-        verify(userClient, never()).addNewUser(userDto);
+        verify(userClient, never()).addNewUser(any());
 
 
         userDto.setEmail("wrongemail");
@@ -69,7 +69,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
-        verify(userClient, never()).addNewUser(userDto);
+        verify(userClient, never()).addNewUser(any());
     }
 
 }

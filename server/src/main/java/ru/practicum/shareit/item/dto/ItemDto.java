@@ -6,9 +6,6 @@ import lombok.Setter;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -19,12 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemDto {
     private Long id;
-    @NotBlank (message = "item name should be not blank or null")
     private String name;
-    @NotBlank (message = "item description should be not blank or null")
-    @Size(max = 200, message = "item description should be not longer than 200 letters")
     private String description;
-    @NotNull (message = "item available should be not null")
     private Boolean available;
     private Long owner;
     private Long requestId;

@@ -164,11 +164,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private BookingState getBookingState(String state) {
-        try {
-            return BookingState.valueOf(state);
-        } catch (Throwable e) {
-            throw new BadRequestException(String.format("Unknown state: %s", state));
-        }
+        return BookingState.valueOf(state);
     }
 
 

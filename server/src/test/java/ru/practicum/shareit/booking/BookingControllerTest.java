@@ -73,48 +73,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void createNewBooking_whenNotValid_thenReturnStatusBadRequest() throws Exception {
-        bookingDto.setStart(LocalDateTime.now().minusDays(1));
-        when(bookingService.createNewBooking(any(), any())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .content(mapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(bookingService, never()).createNewBooking(any(), any());
-
-        bookingDto.setStart(start);
-        bookingDto.setEnd(LocalDateTime.now().minusDays(1));
-        when(bookingService.createNewBooking(any(), any())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .content(mapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(bookingService, never()).createNewBooking(any(), any());
-
-        bookingDto.setStart(start);
-        bookingDto.setEnd(end);
-        bookingDto.setItemId(null);
-        when(bookingService.createNewBooking(any(), any())).thenReturn(bookingDto);
-
-        mockMvc.perform(post("/bookings")
-                        .content(mapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isBadRequest());
-        verify(bookingService, never()).createNewBooking(any(), any());
-    }
-
-    @Test
     void approveBooking_whenInvoked_thenReturnStatusOkAndBookingJson() throws Exception {
         when(bookingService.approveBooking(any(), any(), any())).thenReturn(bookingDto);
 

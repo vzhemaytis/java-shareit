@@ -206,17 +206,6 @@ class BookingServiceTest {
     }
 
     @Test
-    void getUserBookings_whenWrongState_thenThrowsBadRequestException() {
-        Mockito.when(userService.checkIfUserExist(2L)).thenReturn(booker);
-
-        assertThrows(
-                BadRequestException.class,
-                () -> bookingService.getUserBookings(2L, "WRONG", 1L, 1)
-
-        );
-    }
-
-    @Test
     void getOwnerBookings_whenInvoked_thenReturnListOfBookings() {
         List<BookingDto> actualDto;
         Mockito.when(userService.checkIfUserExist(1L)).thenReturn(owner);
@@ -250,17 +239,6 @@ class BookingServiceTest {
                 .thenReturn(List.of(bookingToReturn));
         actualDto = bookingService.getOwnerBookings(1L, "REJECTED", 1L, 1);
         assertEquals(1, actualDto.size());
-    }
-
-    @Test
-    void getOwnerBookings_whenWrongState_thenThrowsBadRequestException() {
-        Mockito.when(userService.checkIfUserExist(1L)).thenReturn(owner);
-
-        assertThrows(
-                BadRequestException.class,
-                () -> bookingService.getOwnerBookings(1L, "WRONG", 1L, 1)
-
-        );
     }
 
     @Test
