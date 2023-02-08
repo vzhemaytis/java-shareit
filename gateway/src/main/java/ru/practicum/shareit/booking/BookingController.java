@@ -23,14 +23,26 @@ public class BookingController {
 	private final BookingClient bookingClient;
 
 	@GetMapping
-	public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> getUserBookings(@RequestHeader("X-Sharer-User-Id") long userId,
 			@RequestParam(name = "state", defaultValue = "all") String stateParam,
 			@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
 			@Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 		BookingState state = BookingState.from(stateParam)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
 		log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-		return bookingClient.getBookings(userId, state, from, size);
+		return bookingClient.getUserBookings(userId, state, from, size);
+	}
+
+	@GetMapping("/owner")
+	public ResponseEntity<Object> getOwnerBookings(
+			@RequestHeader("X-Sharer-User-Id") Long ownerId,
+			@RequestParam(name = "state", defaultValue = "all") String stateParam,
+			@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+			@Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+		BookingState state = BookingState.from(stateParam)
+				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+		log.info("get all bookings for items with owner with id = {} and state = {}", ownerId, stateParam);
+		return bookingClient.getOwnerBookings(ownerId, state, from, size);
 	}
 
 	@PostMapping
@@ -45,4 +57,14 @@ public class BookingController {
 			@PathVariable Long bookingId) {
 		log.info("Get booking {}, userId={}", bookingId, userId);
 		return bookingClient.getBooking(userId, bookingId);
-	}}
+	}
+
+	@PatchMapping("/{bookingId}")
+	public ResponseEntity<Object> approveBooking(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+									 @PathVariable("bookingId") Long bookingId,
+									 @RequestParam(name = "approved") Boolean approved) {
+		log.info("try to set approved to booking with id = {} as {} by user with id = {}",
+				bookingId, approved, ownerId);
+		return bookingClient.approveBooking(ownerId, bookingId, approved);
+	}
+}

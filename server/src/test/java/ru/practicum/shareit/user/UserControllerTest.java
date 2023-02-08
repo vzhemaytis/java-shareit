@@ -102,44 +102,6 @@ class UserControllerTest {
     }
 
     @Test
-    void addNewUser_whenNotValid_thenReturnStatusBadRequest() throws Exception {
-        userDto.setName("");
-        when(userService.addNewUser(userDto)).thenReturn(userDto);
-
-        mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).addNewUser(userDto);
-
-        userDto.setName("name");
-        userDto.setEmail("");
-        when(userService.addNewUser(userDto)).thenReturn(userDto);
-
-        mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).addNewUser(userDto);
-
-
-        userDto.setEmail("wrongemail");
-        when(userService.addNewUser(userDto)).thenReturn(userDto);
-
-        mockMvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).addNewUser(userDto);
-    }
-
-    @Test
     void updateUser_whenInvoked_thenReturnStatusOkAndUserJson() throws Exception {
         when(userService.updateUser(any())).thenReturn(userDto);
 

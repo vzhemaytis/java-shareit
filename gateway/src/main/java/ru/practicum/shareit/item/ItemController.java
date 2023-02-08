@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping(path = "/items")
@@ -69,7 +68,6 @@ public class ItemController {
     public ResponseEntity<Object> addComment(@PathVariable("id") Long id,
                                  @RequestHeader("X-Sharer-User-Id") Long authorId,
                                  @Valid @RequestBody @NotNull CommentDto commentDto) {
-        commentDto.setCreated(LocalDateTime.now());
         return itemClient.addComment(id, authorId, commentDto);
     }
 }

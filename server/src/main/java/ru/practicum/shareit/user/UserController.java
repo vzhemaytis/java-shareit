@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -35,14 +33,14 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto addNewUser(@RequestBody @NotNull @Valid UserDto userDto) {
+    public UserDto addNewUser(@RequestBody UserDto userDto) {
         log.info("save new user = {}", userDto);
         return userService.addNewUser(userDto);
     }
 
     @PatchMapping("/{id}")
     public UserDto updateUser(@PathVariable("id") Long id,
-                              @RequestBody @NotNull UserDto userDto) {
+                              @RequestBody UserDto userDto) {
         userDto.setId(id);
         log.info("update user = {}", userDto);
         return userService.updateUser(userDto);
