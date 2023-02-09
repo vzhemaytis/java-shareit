@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class ItemRequestRepositoryTest {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
 
     User requestor1;
     User requestor2;

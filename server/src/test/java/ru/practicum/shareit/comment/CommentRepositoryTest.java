@@ -19,11 +19,11 @@ import java.util.List;
 @DataJpaTest
 class CommentRepositoryTest {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     User author;
     User owner;

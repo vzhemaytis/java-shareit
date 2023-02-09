@@ -20,11 +20,11 @@ import java.util.List;
 @DataJpaTest
 class ItemRepositoryTest {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     User user1;
     User user2;

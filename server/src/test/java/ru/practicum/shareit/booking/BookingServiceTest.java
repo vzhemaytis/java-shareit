@@ -30,13 +30,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceTest {
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    UserService userService;
+    private UserService userService;
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
     @InjectMocks
-    BookingServiceImpl bookingService;
+    private BookingServiceImpl bookingService;
 
     Booking bookingToSave;
     Booking bookingToReturn;

@@ -34,17 +34,17 @@ import static org.mockito.Mockito.*;
 class ItemServiceTest {
 
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    UserService userService;
+    private UserService userService;
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @InjectMocks
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
     Item itemToSave;
     Item itemToReturn;

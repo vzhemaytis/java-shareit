@@ -27,11 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class BookingControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     BookingDto bookingDto;
     LocalDateTime start;

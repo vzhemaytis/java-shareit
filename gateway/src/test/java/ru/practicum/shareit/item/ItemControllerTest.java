@@ -24,11 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ItemControllerTest {
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     @MockBean
-    ItemClient itemClient;
+    private ItemClient itemClient;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     ItemDto itemDto;
     CommentDto commentDto;
 

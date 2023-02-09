@@ -21,11 +21,11 @@ import java.util.Optional;
 @DataJpaTest
 class BookingRepositoryTest {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
 
     Booking bookingToSave;
     Booking lastBooking;

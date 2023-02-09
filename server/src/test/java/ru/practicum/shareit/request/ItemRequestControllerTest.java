@@ -24,11 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ItemRequestControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     @MockBean
-    ItemRequestService service;
+    private ItemRequestService service;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     ItemRequestDto requestDto;
 

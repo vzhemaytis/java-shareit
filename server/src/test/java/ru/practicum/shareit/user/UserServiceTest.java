@@ -23,9 +23,9 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @InjectMocks
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
     User user1;
     User user2;
 

@@ -27,13 +27,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceTest {
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Mock
-    UserService userService;
+    private UserService userService;
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
     @InjectMocks
-    ItemRequestServiceImpl itemRequestService;
+    private ItemRequestServiceImpl itemRequestService;
     ItemRequestDto requestDtoToSave;
     ItemRequest requestToSave;
     ItemRequest requestToReturn;

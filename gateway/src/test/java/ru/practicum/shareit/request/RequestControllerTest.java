@@ -23,11 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RequestControllerTest {
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     @MockBean
-    RequestClient requestClient;
+    private RequestClient requestClient;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     ItemRequestDto requestDto;
 
     @BeforeEach
